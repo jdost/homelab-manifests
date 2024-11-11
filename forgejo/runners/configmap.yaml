@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forgejo-runner-files
+
+data:
+  setup_data.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    mkdir -p /data
+    cd /data/
+    mkdir -p .cache
+
+    config_file="./config.yaml"
+    if [[ ! -f $config_file ]]; then
+      cp $(dirname $0)/$config_file $config_file
+      chmod 775 $config_file
+      chown 1000:1000 $config_file
+      chmod g+s $config_file
+    fi
+
+    runner_file=".runner"
+    if [[ ! -f $runner_file ]]; then
+      forgejo-runner register \
+        --no-interactive \
+        --token $FORGEJO_RUNNER_TOKEN \
+        --name $(hostname) \
+        --instance $FORGEJO_HOST \
+        --labels "docker:docker://node:20-bookworm,ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-22.04"
+      chmod 775 $runner_file
+      chmod g+s $runner_file
+      cat $runner_file
+    fi
+
+    chmod 775 /data/.cache
+    chmod g+s /data/.cache
+  wait_and_run.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    sleep 10;
+    while ! nc -z 127.0.0.1 2375 </dev/null; do
+      echo 'waiting for docker daemon...';
+      sleep 5;
+    done
+
+    exec forgejo-runner --config ./config.yaml daemon
+  config.yaml: |
+    log:
+      # The level of logging, can be trace, debug, info, warn, error, fatal
+      level: info
+
+    runner:
+      file: .runner
+      capacity: 1
+      envs:
+        DOCKER_HOST: tcp://127.0.0.1:2375
+      timeout: 3h
+      # Whether skip verifying the TLS certificate of the Forgejo instance.
+      insecure: true
+      # The timeout for fetching the job from the Forgejo instance.
+      fetch_timeout: 5s
+      # The interval for fetching the job from the Forgejo instance.
+      fetch_interval: 2s
+      # This doesn't actually do anything, it will show up as labels in the UI, but the
+      # value set during register is what actually is used, so update there instead
+      labels:
+      - 'docker:docker://node:20-bookworm'
+      - 'ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-22.04'
+
+    cache:
+      enabled: true
+      # If it's empty, the cache data will be stored in $HOME/.cache/actcache.
+      dir: ""
+      host: ""
+      port: 0
+      external_server: ""
+
+    container:
+      network: "host"
+      enable_ipv6: false
+      privileged: false
+      options: ""
+      workdir_parent:
+      valid_volumes: []
+      # overrides the docker client host with the specified one.
+      # If it's empty, act_runner will find an available docker host automatically.
+      # If it's "-", act_runner will find an available docker host automatically, but the docker host won't be mounted to the job containers and service containers.
+      # If it's not empty or "-", the specified docker host will be used. An error will be returned if it doesn't work.
+      docker_host: ""
+      force_pull: false
+
+    host:
+      workdir_parent:

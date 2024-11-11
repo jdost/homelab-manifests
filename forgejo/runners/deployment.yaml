@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo-runner
+  labels:
+    app.kubernetes.io/name: forgejo-runner
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forgejo-runner
+  template:
+    metadata:
+      labels:
+        app: forgejo-runner
+        app.kubernetes.io/name: forgejo-runner
+    spec:
+      initContainers:
+      - name: dir-setup
+        image: code.forgejo.org/forgejo/runner:3.4.1
+        command: ["/mnt/files/setup_data.sh"]
+        envFrom:
+        - secretRef:
+            name: forgejo-runner-credentials
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /mnt/files
+          name: files
+      containers:
+      - name: dockerd
+        image: docker:23.0.6-dind
+        command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
+        securityContext:
+          privileged: true
+      - name: runner
+        image: code.forgejo.org/forgejo/runner:3.4.1
+        command: ["/mnt/files/wait_and_run.sh"]
+        env:
+        - name: DOCKER_HOST
+          value: tcp://127.0.0.1:2375
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /mnt/files
+          name: files
+      volumes:
+      - name: data
+        emptyDir:
+          sizeLimit: 5Gi
+      - name: files
+        configMap:
+          name: forgejo-runner-files
+          defaultMode: 0555

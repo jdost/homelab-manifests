@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: forgejo
+  labels:
+    app.kubernetes.io/name: forgejo
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forgejo
+  template:
+    metadata:
+      labels:
+        app: forgejo
+        app.kubernetes.io/name: forgejo
+    spec:
+      containers:
+      - name: forgejo
+        image: codeberg.org/forgejo/forgejo:9.0.1
+        ports:
+        - containerPort: 22
+          name: ssh
+        - containerPort: 3000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: forgejo-config
+        env:
+        - name: PG_HOST
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db-app
+              key: host
+        - name: PG_PORT
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db-app
+              key: port
+        - name: FORGEJO__database__HOST
+          value: "$(PG_HOST):$(PG_PORT)"
+        - name: FORGEJO__database__USER
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db-app
+              key: user
+        - name: FORGEJO__database__PASSWD
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db-app
+              key: password
+        - name: FORGEJO__database__NAME
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db-app
+              key: dbname
+        volumeMounts:
+        - name: forgejo-data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: forgejo-data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 5Gi
