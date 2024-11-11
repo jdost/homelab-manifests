@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/description: Deployment Service
+    gethomepage.dev/group: Services
+    gethomepage.dev/name: ArgoCD
+    gethomepage.dev/icon: "http://argo/assets/images/logo.png"
+
+spec:
+  rules:
+  - host: argo
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: argocd-server
+            port:
+              name: http
