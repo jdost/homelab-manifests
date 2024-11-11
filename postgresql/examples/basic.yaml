@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: basic-psql-db
+  namespace: my-app-namespace
+
+spec:
+  instances: 1
+
+  storage:
+    size: 5Gi
+
+  monitoring:
+    enablePodMonitor: true
