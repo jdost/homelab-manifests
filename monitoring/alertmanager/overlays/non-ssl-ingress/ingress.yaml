@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alertmanager
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Alert Manager
+    gethomepage.dev/description: Monitoring
+    gethomepage.dev/group: Monitoring
+
+spec:
+  rules:
+  - host: alertmanager
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: alertmanager-operated
+            port:
+              name: web
