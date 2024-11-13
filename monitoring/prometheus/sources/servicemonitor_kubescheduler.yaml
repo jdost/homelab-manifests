@@ -1,0 +1,37 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/kubernetesControlPlane-serviceMonitorKubeScheduler.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/name: kube-scheduler
+  name: kube-scheduler
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-scheduler
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+    - kube-system
+
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    port: https-metrics
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 5s
+    metricRelabelings:
+    - action: drop
+      regex: process_start_time_seconds
+      sourceLabels:
+      - __name__
+    path: /metrics/slis
+    port: https-metrics
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true

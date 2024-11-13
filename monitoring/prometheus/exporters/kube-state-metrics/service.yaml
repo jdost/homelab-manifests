@@ -1,0 +1,19 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/kubeStateMetrics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: kube-state-metrics
+  name: kube-state-metrics
+
+spec:
+  selector:
+    app.kubernetes.io/name: kube-state-metrics
+  clusterIP: None
+  ports:
+  - name: https-main
+    port: 8443
+    targetPort: https-main
+  - name: https-self
+    port: 9443
+    targetPort: https-self

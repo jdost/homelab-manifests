@@ -1,0 +1,44 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: kubernetes-pods
+  labels:
+    prometheus: default
+
+spec:
+  kubernetesSDConfigs:
+  - role: Pod
+
+  relabelings:
+  # Example relabel to scrape only endpoints that have
+  # "prometheus.io/scrape = true" annotation.
+  - action: Keep
+    sourceLabels:
+    - "__meta_kubernetes_pod_annotation_prometheus_io_scrape"
+    regex: "true"
+  # Example relabel to customize metric path based on endpoints
+  # "prometheus.io/path = <metric path>" annotation.
+  - action: Replace
+    sourceLabels:
+    - "__meta_kubernetes_pod_annotation_prometheus_io_path"
+    targetLabel: "__metrics_path__"
+    regex: "(.+)"
+  # Example relabel to scrape only single, desired port for the service based
+  # on endpoints "prometheus.io/port = <port>" annotation.
+  - action: Replace
+    sourceLabels:
+    - "__address__"
+    - "__meta_kubernetes_pod_annotation_prometheus_io_port"
+    regex: "([^:]+)(?::\\d+)?;(\\d+)"
+    replacement: "$1:$2"
+    targetLabel: "__address__"
+  - action: LabelMap
+    regex: "__meta_kubernetes_pod_label_(.+)"
+  - action: Replace
+    sourceLabels:
+    - "__meta_kubernetes_namespace"
+    targetLabel: kubernetes_namespace
+  - action: Replace
+    sourceLabels:
+    - "__meta_kubernetes_pod_name"
+    targetLabel: kubernetes_pod_name

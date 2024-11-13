@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Prometheus
+    gethomepage.dev/description: Monitoring
+    gethomepage.dev/group: Monitoring
+    gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/prometheus.png"
+    gethomepage.dev/widget.type: "prometheus"
+    gethomepage.dev/widget.url: "http://prometheus-operated:9090"
+
+spec:
+  rules:
+  - host: prometheus
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-operated
+            port:
+              name: web

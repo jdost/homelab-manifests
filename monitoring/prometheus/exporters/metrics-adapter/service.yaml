@@ -1,0 +1,15 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+  name: metrics-adapter
+
+spec:
+  selector:
+    app.kubernetes.io/name: metrics-adapter
+  ports:
+  - name: https
+    port: 443
+    targetPort: 6443
