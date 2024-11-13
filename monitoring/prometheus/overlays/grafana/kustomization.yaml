@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./../../base/
+- ./datasource.yaml
+- ./coredns-dashboard.yaml
+- ./kubestatemetrics-dashboard.yaml
+- ./nodeexporter-dashboard.yaml
