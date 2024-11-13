@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./scrape_kubernetes_pods.yaml
+- ./scrape_kubernetes_service_endpoints.yaml
+- ./servicemonitor_apiserver.yaml
+- ./servicemonitor_coredns.yaml
+- ./servicemonitor_kubecontrollermanager.yaml
+- ./servicemonitor_kubelet.yaml
+- ./servicemonitor_kubescheduler.yaml

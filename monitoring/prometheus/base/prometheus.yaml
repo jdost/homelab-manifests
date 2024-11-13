@@ -1,0 +1,32 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheus-prometheus.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main
+  labels:
+    app.kubernetes.io/name: prometheus
+
+spec:
+  replicas: 1
+  serviceAccountName: prometheus
+  resources:
+    requests:
+      memory: 400Mi
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 50Gi
+  enableFeatures: []
+  externalLabels: {}
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  probeNamespaceSelector: {}
+  probeSelector: {}
+  ruleNamespaceSelector: {}
+  ruleSelector: {}
+  scrapeConfigNamespaceSelector: {}
+  scrapeConfigSelector: {}
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}

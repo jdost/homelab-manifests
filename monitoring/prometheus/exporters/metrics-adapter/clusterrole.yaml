@@ -1,0 +1,92 @@
+---
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-clusterRole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+  name: metrics-adapter
+
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - namespaces
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-clusterRoleAggregatedMetricsReader.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+  name: system:aggregated-metrics-reader
+
+rules:
+- apiGroups:
+  - metrics.k8s.io
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-clusterRoleServerResources.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+  name: resource-metrics-server-resources
+rules:
+- apiGroups:
+  - metrics.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-clusterRoleBindingDelegator.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+  name: resource-metrics:system:auth-delegator
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+
+subjects:
+- kind: ServiceAccount
+  name: metrics-adapter
+---
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/prometheusAdapter-clusterRoleBinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: metrics-adapter
+  name: metrics-adapter
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metrics-adapter
+
+subjects:
+- kind: ServiceAccount
+  name: metrics-adapter

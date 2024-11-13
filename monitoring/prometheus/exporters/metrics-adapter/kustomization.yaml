@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./deployment.yaml
+- ./serviceaccount.yaml
+- ./service.yaml
+- ./servicemonitor.yaml
+# Manually need to apply, it needs to retain the `kube-system` namespace, which I
+#   haven't figured out a way to be an exception from the builtin transformer
+#- ./role.yaml
+- ./clusterrole.yaml
+- ./configmap.yaml
+- ./apiservice.yaml
