@@ -16,3 +16,5 @@ setup for snapshotting).
 
 - Since this just wraps the upstream manifest, this is just a set of examples of 
   what I am doing per environment
+- I included the general grafana dashboard for the operator, this expects the 
+  grafana-operator to be available
