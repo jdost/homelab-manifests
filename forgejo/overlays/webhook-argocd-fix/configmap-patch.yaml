@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forgejo-config
+
+data:
+  FORGEJO__server__ROOT_URL: http://forgejo.git/
