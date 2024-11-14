@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  labels:
+    app.kubernetes.io/name: minio
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+        app.kubernetes.io/name: minio
+    spec:
+      containers:
+      - name: minio
+        image: quay.io/minio/minio:latest
+        command:
+        - "minio"
+        - "server"
+        - "/data"
+        - "--console-address"
+        - ":9001"
+        ports:
+        - containerPort: 9001
+          name: http
+        - containerPort: 9000
+          name: api
+        envFrom:
+        - secretRef:
+            name: minio-root-credentials
+        readinessProbe:
+          httpGet:
+            path: /minio/health/live
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /minio/health/live
+            port: http
+        resources:
+          requests:
+            cpu: "0.25"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        volumeMounts:
+        - mountPath: /data
+          name: data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 5Gi

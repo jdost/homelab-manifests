@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  labels:
+    app.kubernetes.io/name: minio
+
+spec:
+  selector:
+    app: minio
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+    name: http
+  - protocol: TCP
+    port: 9001
+    targetPort: api
+    name: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-api
+  labels:
+    app.kubernetes.io/name: minio-api
+  annotations:
+    # Disabling in favor of an explicit servicemonitor to play nice with the
+    #   grafana dashboard provided, which expects to follow their setup
+    prometheus.io/scrape: false
+    prometheus.io/path: /minio/v2/metrics/cluster
+    prometheus.io/port: 9001
+
+spec:
+  selector:
+    app: minio
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 9001
+    targetPort: api
+    name: api
