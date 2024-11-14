@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: blackbox-kubernetes-services
+  labels:
+    prometheus: default
+
+spec:
+  kubernetesSDConfigs:
+  - role: Service
+
+  metricsPath: /probe
+  params:
+    module: ['http_2xx']
+
+  relabelings:
+    # Example relabel to disable scrape on services that have
+    #  "prometheus.io/probe = "false" annotation.  (i.e. opt-in by default)
+    - action: Drop
+      sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+      regex: "false"
+    # Set the target address to the "target" param
+    - sourceLabels: [__address__]
+      targetLabel: __param_target
+    # Replace the address with the blackbox-exporter service
+    - targetLabel: __address__
+      replacement:  blackbox-exporter:19115
+    - sourceLabels: [__param_target]
+      targetLabel: instance
+    - action: LabelMap
+      regex: __meta_kubernetes_service_label_(.+)
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: kubernetes_namespace
+    - sourceLabels: [__meta_kubernetes_service_name]
+      targetLabel: kubernetes_service_name

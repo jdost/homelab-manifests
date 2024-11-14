@@ -1,0 +1,19 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/main/manifests/blackboxExporter-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+  name: blackbox-exporter
+
+spec:
+  selector:
+    app.kubernetes.io/name: blackbox-exporter
+
+  ports:
+  - name: https
+    port: 9115
+    targetPort: https
+  - name: probe
+    port: 19115
+    targetPort: http

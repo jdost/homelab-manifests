@@ -1,13 +1,13 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: kubernetes-service-endpoints
+  name: kubernetes-services
   labels:
     prometheus: default
 
 spec:
   kubernetesSDConfigs:
-  - role: Endpoints
+  - role: Service
 
   relabelings:
     # Example relabel to scrape only endpoints that have
