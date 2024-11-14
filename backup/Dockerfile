@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        postgresql-client \
         wget \
     && rm -rf /var/lib/apt/lists/* \
       /var/cache/apt/* \
