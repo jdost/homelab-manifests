@@ -11,6 +11,6 @@ spec:
         image: code.forgejo.org/forgejo/runner:4.0.1
       containers:
       - name: dockerd
-        image: dockerd:27.3.1-dind
+        image: docker:27.3.1-dind
       - name: runner
         image: code.forgejo.org/forgejo/runner:4.0.1
