@@ -1,0 +1,45 @@
+---
+# SecretRequest for getting Minio credentials
+apiVersion: "jdost.us/v1alpha1"
+kind: SecretRequest
+metadata:
+  name: example-db-minio-credentials
+  namespace: my-app-namespace
+
+spec:
+  secrets:
+  - name: minio-access-key
+    note: API Access Key for minio uploads
+  - name: minio-secret-key
+    note: API Secret Key for minio uploads
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: example-db
+  namespace: my-app-namespace
+
+spec:
+  instances: 1
+
+  storage:
+    size: 5Gi
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://backups/example-db/
+      endpointURL: http://minio.minio.svc.local:9001
+      s3Credentials:
+        accessKeyId:
+          name: example-db-minio-credentials
+          key: minio-access-key
+        secretAccessKey:
+          name: example-db-minio-credentials
+          key: minio-secret-key
+      wal:
+        compression: gzip
+      data:
+        additionaCommandArgs:
+        - "--min-chunk-size=5MB"
+        - "--read-timeout=60"
+        - "-vv"

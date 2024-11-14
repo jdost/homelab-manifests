@@ -18,3 +18,6 @@ setup for snapshotting).
   what I am doing per environment
 - I included the general grafana dashboard for the operator, this expects the 
   grafana-operator to be available
+- In the examples, the `basic_with_minio_backup.yaml` shows a way to set up 
+  streaming wal archives to a local minio deployment (uses a SecretRequest) to 
+  document the secret
