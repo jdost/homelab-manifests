@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: adguard-backup
+
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+- apiGroups: [""]
+  resources:
+  - pods/cp
+  - pods/exec
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: adguard-backup
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: adguard-backup
+
+subjects:
+- kind: ServiceAccount
+  name: adguard-backup
