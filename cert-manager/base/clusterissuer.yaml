@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  namespace: cert-manager
+spec:
+  acme:
+    email: email@example.local
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
+      name: staging-issuer-account-key
+    solvers:
+    - dns01:
+        cnameStrategy: Follow
+        cloudflare:
+          apiTokenSecretRef:
+            name: cloudflare-credentials
+            key: dns-api-token
+      selector:
+        dnsZones:
+        - 'example.local'
