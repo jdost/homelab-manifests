@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-exporter
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-exporter
+  template:
+    metadata:
+      labels:
+        app: adguard-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9618"
+    spec:
+      containers:
+      - name: adguard-exporter
+        image: ghcr.io/henrywhitaker3/adguard-exporter:latest
+        env:
+        - name: ADGUARD_SERVERS
+          value: 'http://adguard'
+        - name: ADGUARD_USERNAMES
+          valueFrom:
+            secretKeyRef:
+              name: adguard-provider-credentials
+              key: ADGUARD_USER
+        - name: ADGUARD_PASSWORDS
+          valueFrom:
+            secretKeyRef:
+              name: adguard-provider-credentials
+              key: ADGUARD_PASSWORD
+        ports:
+        - containerPort: 9618
+          name: metrics
+        resources:
+          requests:
+            cpu: "0.1"
+            memory: "64Mi"
+          limits:
+            cpu: "1.0"
+            memory: "256Mi"

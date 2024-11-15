@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: adguard
+  labels:
+    app.kubernetes.io/name: adguard
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard
+  template:
+    metadata:
+      labels:
+        app: adguard
+        app.kubernetes.io/name: adguard
+    spec:
+      containers:
+      - name: adguard
+        image: adguard/adguardhome:latest
+        args:
+        - "--no-check-update"
+        - "--config"
+        - "/opt/adguardhome/conf/AdGuardHome.yaml"
+        - "--work-dir"
+        - "/opt/adguardhome/work"
+        - "--web-addr"
+        - "0.0.0.0:3000"
+        ports:
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+        - containerPort: 853
+          name: dns-tls
+          protocol: UDP
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: adguard-data
+          mountPath: /opt/adguardhome/work
+        - name: adguard-config
+          mountPath: /opt/adguardhome/conf
+        resources:
+          requests:
+            cpu: "0.25"
+            memory: "256Mi"
+          limits:
+            cpu: "2.0"
+            memory: "1Gi"
+  volumeClaimTemplates:
+  - metadata:
+      name: adguard-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: adguard-config
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi

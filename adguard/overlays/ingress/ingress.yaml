@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/description: DNS Server
+    gethomepage.dev/group: Services
+    gethomepage.dev/icon: "http://adguard/assets/favicon.png"
+    gethomepage.dev/name: Adguard
+
+spec:
+  rules:
+  - host: adguard
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: adguard
+              port:
+                name: http
