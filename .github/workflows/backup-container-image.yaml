@@ -2,6 +2,9 @@ name: Backup Container Image
 
 on:
   push:
+    paths:
+      - backup/Dockerfile
+      - .github/workflows/backup-container-image.yaml
 
 env:
   REGISTRY: ghcr.io
