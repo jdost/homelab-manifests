@@ -7,4 +7,4 @@ spec:
     matchLabels:
       dashboards: "grafana"
   grafanaCom:
-    id: 14981
+    id: 15762

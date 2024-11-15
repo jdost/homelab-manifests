@@ -3,6 +3,9 @@ kind: GrafanaDashboard
 metadata:
   name: kube-state-metrics
 spec:
+  datasources:
+  - inputName: "VAR_DATASOURCE"
+    datasourceName: "prometheus"
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
