@@ -4,8 +4,19 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
-        postgresql-client \
+        gnupg \
         wget \
+    && rm -rf /var/lib/apt/lists/* \
+      /var/cache/apt/* \
+      /var/log/* \
+      /usr/share/man \
+      /usr/share/doc
+# Get PSQL17 Utils
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        postgresql-client-17 \
     && rm -rf /var/lib/apt/lists/* \
       /var/cache/apt/* \
       /var/log/* \
