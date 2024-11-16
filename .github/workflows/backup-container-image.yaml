@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - backup/Dockerfile
+      - backup/cnpg_dump.sh
       - .github/workflows/backup-container-image.yaml
 
 env:

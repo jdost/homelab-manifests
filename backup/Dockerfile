@@ -21,4 +21,6 @@ RUN curl -LO https://dl.min.io/client/mc/release/linux-amd64/mc \
     && chmod +x mc \
     && mv ./mc /usr/bin/mc
 
+ADD cnpg_dump.sh /usr/bin/cnpg_dump
+
 ENTRYPOINT ["/bin/bash"]
