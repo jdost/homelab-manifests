@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gotify
+  labels:
+    app.kubernetes.io/name: gotify
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotify
+  template:
+    metadata:
+      labels:
+        app: gotify
+        app.kubernetes.io/name: gotify
+    spec:
+      containers:
+      - name: gotify
+        image: gotify/server:latest
+        ports:
+        - containerPort: 80
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+        env:
+        - name: GOTIFY_DATABASE_DIALECT
+          value: postgres
+        - name: PG_HOST
+          valueFrom:
+            secretKeyRef:
+              name: gotify-db-app
+              key: host
+        - name: PG_PORT
+          valueFrom:
+            secretKeyRef:
+              name: gotify-db-app
+              key: port
+        - name: PG_USER
+          valueFrom:
+            secretKeyRef:
+              name: gotify-db-app
+              key: username
+        - name: PG_DB
+          valueFrom:
+            secretKeyRef:
+              name: gotify-db-app
+              key: dbname
+        - name: PG_PASS
+          valueFrom:
+            secretKeyRef:
+              name: gotify-db-app
+              key: password
+        - name: GOTIFY_DATABASE_CONNECTION
+          value: host=$(PG_HOST) port=$(PG_PORT) user=$(PG_USER) dbname=$(PG_DB) password=$(PG_PASS)
+        - name: GOTIFY_PASSSTRENGTH
+          valueFrom:
+            secretKeyRef:
+              name: gotify-config
+              key: password-strength
+        - name: GOTIFY_DEFAULTUSER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: gotify-config
+              key: default-username
+        - name: GOTIFY_DEFAULTUSER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: gotify-config
+              key: default-password
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        resources:
+          requests:
+            cpu: "0.25"
+            memory: "128Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 1Gi

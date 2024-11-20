@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gotify-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").tgz
+
+    cnpg_dump > gotify-db.sql
+    kubectl cp gotify-0:/app/data ./data/
+    tar czvf $backup_file gotify-db.sql data/
+
+    mc mv $backup_file cluster/backups/gotify/$backup_file
