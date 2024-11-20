@@ -9,8 +9,8 @@ data:
     set -euo pipefail
 
     backup_file=$(date "+%Y%m%d-%H%M").tgz
-    kubectl cp dns/adguard-0:/opt/adguardhome/work work/
-    kubectl cp dns/adguard-0:/opt/adguardhome/conf conf/
+    kubectl cp adguard-0:/opt/adguardhome/work work/
+    kubectl cp adguard-0:/opt/adguardhome/conf conf/
     tar czf $backup_file work/ conf/
 
     mc mv $backup_file cluster/backups/adguard/$backup_file

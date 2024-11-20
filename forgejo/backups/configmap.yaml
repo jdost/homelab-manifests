@@ -10,6 +10,6 @@ data:
 
     backup_file=$(date "+%Y%m%d-%H%M").zip
     kubectl exec -n git forgejo-0 -t -- /bin/su git -c "forgejo dump -f /data/git/backup.zip"
-    kubectl cp git/forgejo-0:/data/git/backup.zip $backup_file
+    kubectl cp forgejo-0:/data/git/backup.zip $backup_file
 
     mc mv $backup_file cluster/backups/forgejo/$backup_file
