@@ -6,7 +6,17 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Services
     gethomepage.dev/name: Forgejo
+    # Update this to point at your ingress domain or a public icon
+    gethomepage.dev/icon: "http://forgejo/assets/img/logo.svg"
     gethomepage.dev/description: Git Server
+    # Remove these widgets if you don't want the homepage widget
+    gethomepage.dev/widget.type: "gitea"
+    # Update this URL to the service DNS for homepage (i.e. `forgejo.<namespace>`
+    #   if not in the same namespace as homepage)
+    gethomepage.dev/widget.url: "http://forgejo/"
+    # This is so you can pass the API token via a secret, see the `homepage-secrets`
+    #   file alongside this
+    gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_FORGEJO_KEY}}"
 
 spec:
   rules:
