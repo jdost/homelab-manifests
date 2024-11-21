@@ -1,12 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd
+  name: argocd-server
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/description: Deployment Service
     gethomepage.dev/group: Services
     gethomepage.dev/name: ArgoCD
+    # Update this to point at the ingress you use or a public icon
     gethomepage.dev/icon: "http://argo/assets/images/logo.png"
 
 spec:
