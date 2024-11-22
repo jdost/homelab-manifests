@@ -5,6 +5,7 @@ RUN apt-get update \
         ca-certificates \
         curl \
         gnupg \
+        jq \
         wget \
     && rm -rf /var/lib/apt/lists/* \
       /var/cache/apt/* \
