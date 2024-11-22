@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forgejo-svc-mimic
+  annotations:
+    # This annotation tells external-dns to skip this ingress, so it's semi-private
+    external-dns.alpha.kubernetes.io/controller: "ignored"
+
+spec:
+  rules:
+  # Use the target namespace in place of `forgejo-namespace`
+  - host: forgejo.forgejo-namespace
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: forgejo
+            port:
+              name: http

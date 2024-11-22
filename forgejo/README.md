@@ -17,3 +17,7 @@ and image building.
 
 - Overlays show ingress definitions
 - As stated above, the `runners` folder defines the optional runner deployment
+- There is a weird overlay for defining the internal service DNS externally, this is
+  specifically for weird corner cases where you refer to another internal repo w/
+  argocd, which wants to resolve the internal DNS, but also test externally, see
+  the README for more details
