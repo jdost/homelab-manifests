@@ -12,6 +12,6 @@ spec:
   insecureSkipTLSVerify: true
   service:
     name: metrics-adapter
-    namespace: monitoring
+    namespace: kube-system
   version: v1beta1
   versionPriority: 100
