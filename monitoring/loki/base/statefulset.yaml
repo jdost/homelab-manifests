@@ -14,9 +14,6 @@ spec:
 
   template:
     metadata:
-      annotations:
-        prometheus.io/port: http-metrics
-        prometheus.io/scrape: "true"
       labels:
         app: loki
 
