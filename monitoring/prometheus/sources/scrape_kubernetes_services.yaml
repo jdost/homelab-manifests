@@ -34,6 +34,18 @@ spec:
       sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
       targetLabel: __scheme__
       regex: (https?)
+    # Example relabel to configure scrape interval
+    # based on endpoints "prometheus.io/interval = <interval>" annotation.
+    - action: Replace
+      sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_interval]
+      targetLabel: __scrape_interval__
+      regex: (.+)
+    # Example relabel to configure scrape interval
+    # based on endpoints "prometheus.io/timeout = <timeout>" annotation.
+    - action: Replace
+      sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_timeout]
+      targetLabel: __scrape_timeout__
+      regex: (.+)
     - action: LabelMap
       regex: __meta_kubernetes_service_label_(.+)
     - action: Replace
