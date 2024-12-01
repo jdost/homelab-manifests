@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linkwarden-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").tgz
+
+    cnpg_dump > linkwarden-db.sql
+    kubectl cp linkwarden-0:/data/data ./data/
+    tar czvf $backup_file linkwarden-db.sql data/
+
+    mc mv $backup_file cluster/backups/linkwarden/$backup_file
