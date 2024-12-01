@@ -4,10 +4,8 @@ metadata:
   name: forgejo
   annotations:
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: Services
     gethomepage.dev/name: Forgejo
-    # Update this to point at your ingress domain or a public icon
-    gethomepage.dev/icon: "http://forgejo/assets/img/logo.svg"
+    gethomepage.dev/icon: "sh-forgejo"
     gethomepage.dev/description: Git Server
     # Remove these widgets if you don't want the homepage widget
     gethomepage.dev/widget.type: "gitea"

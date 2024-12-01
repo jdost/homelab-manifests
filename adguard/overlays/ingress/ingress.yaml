@@ -5,9 +5,8 @@ metadata:
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/description: DNS Server
-    gethomepage.dev/group: Services
     # update the domain to whatever you use or switch to a public icon
-    gethomepage.dev/icon: "http://adguard/assets/favicon.png"
+    gethomepage.dev/icon: "sh-adguard"
     gethomepage.dev/name: Adguard
     # You can add the widget, as documented here: https://gethomepage.dev/widgets/services/adguard-home/
 

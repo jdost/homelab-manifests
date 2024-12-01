@@ -6,11 +6,14 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/name: Gotify
     gethomepage.dev/description: Notifications
-    gethomepage.dev/group: Services
-    # Update the path to your actual ingress path or switch to a public icon repo
-    gethomepage.dev/icon: "http://gotify/static/favicon-196x196.png"
+    gethomepage.dev/icon: "sh-gotify"
+    # Remove these widgets if you don't want the homepage widget
     gethomepage.dev/widget.type: "gotify"
-    gethomepage.dev/widget.url: "http://gotify.gotify"
+    # Update this URL to the service DNS for homepage (i.e. `gotify.<namespace>`
+    #   if not in the same namespace as homepage)
+    gethomepage.dev/widget.url: "http://gotify"
+    # This is so you can pass the API token via a secret, see the `homepage-secrets`
+    #   file alongside this
     gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_GOTIFY_KEY}}"
 
 spec:
