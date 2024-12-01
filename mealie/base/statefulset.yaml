@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mealie
+  labels:
+    app.kubernetes.io/name: mealie
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mealie
+  template:
+    metadata:
+      labels:
+        app: mealie
+        app.kubernetes.io/name: mealie
+    spec:
+      containers:
+      - name: mealie
+        image: ghcr.io/mealie-recipes/mealie:latest
+        ports:
+        - containerPort: 9000
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /api/app/about
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /api/app/about
+            port: http
+        env:
+        - name: DB_ENGINE
+          value: postgres
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: mealie-db-app
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mealie-db-app
+              key: password
+        - name: POSTGRES_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: mealie-db-app
+              key: host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mealie-db-app
+              key: port
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: mealie-db-app
+              key: dbname
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "2.0"
+            memory: "1Gi"
+        volumeMounts:
+        - name: mealie-data
+          mountPath: /app/data
+  volumeClaimTemplates:
+  - metadata:
+      name: mealie-data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 5Gi

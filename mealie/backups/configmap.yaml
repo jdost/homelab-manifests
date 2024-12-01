@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mealie-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").zip
+
+    # Trigger the backup to be made
+    curl --silent -H "Authorization: Bearer $MEALIE_API_TOKEN" \
+      -H 'Content-Type: application/json' \
+      http://mealie/api/admin/backups \
+      --data-raw '{}'
+    sleep 15 # Give 15s to generate the backup
+    remote_file=$(curl --silent -H "Authorization: Bearer $MEALIE_API_TOKEN" http://mealie/api/admin/backups | jq '.imports[0].name')
+    curl --silent -o $backup_file -H "Authorization: Bearer $MEALIE_API_TOKEN" http://mealie/api/admin/backups/$remote_file
+
+    mc mv $backup_file cluster/backups/mealie/$backup_file
