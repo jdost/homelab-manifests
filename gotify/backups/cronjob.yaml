@@ -5,8 +5,13 @@ metadata:
 spec:
   # Run every night @ 11:03AM UTC (3:03AM PST)
   schedule: '03 11 * * *'
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 86400  # 24h TTL
+
       template:
         spec:
           automountServiceAccountToken: true
