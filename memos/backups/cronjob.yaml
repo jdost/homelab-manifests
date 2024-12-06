@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: memos-backup
+spec:
+  # Run every night @ 11:03AM UTC (3:03AM PST)
+  schedule: '03 11 * * *'
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400  # 24h TTL
+
+      template:
+        spec:
+          automountServiceAccountToken: true
+          serviceAccountName: memos-backup
+          containers:
+          - name: backup
+            image: ghcr.io/jdost/homelab-backup:latest
+            command:
+            - /mnt/scripts/backup_script.sh
+            env:
+            - name: MINIO_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: memos-backup-credentials
+                  key: minio_host
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: memos-backup-credentials
+                  key: minio_access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: memos-backup-credentials
+                  key: minio_secret_key
+            - name: MC_HOST_cluster
+              value: "http://$(MINIO_ACCESS_KEY):$(MINIO_SECRET_KEY)@$(MINIO_HOST)"
+            envFrom:
+            - secretRef:
+                name: memos-db-app
+            volumeMounts:
+            - mountPath: /mnt/scripts
+              name: scripts
+          volumes:
+          - name: scripts
+            configMap:
+              name: memos-backup-scripts
+              defaultMode: 0555
+          restartPolicy: Never

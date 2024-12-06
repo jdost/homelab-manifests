@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memos-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").tgz
+
+    cnpg_dump > memos-db.sql
+    kubectl cp memos-0:/var/opt/memos ./data/
+    tar czvf $backup_file memos-db.sql data/
+
+    mc mv $backup_file cluster/backups/memos/$backup_file
