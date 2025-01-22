@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").tgz
+
+    cnpg_dump > immich-db.sql
+    tar czvf $backup_file immich-db.sql
+
+    mc mv $backup_file cluster/backups/immich/$backup_file
