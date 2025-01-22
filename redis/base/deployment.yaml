@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-operator
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      name: redis-operator
+
+  template:
+    metadata:
+      annotations:
+        cert-manager.io/inject-ca-from: redis/serving-cert
+      labels:
+        name: redis-operator
+    spec:
+      automountServiceAccountToken: true
+      securityContext: {}
+      serviceAccount: redis-operator
+      serviceAccountName: redis-operator
+
+      containers:
+      - name: redis-operator
+        image: ghcr.io/ot-container-kit/redis-operator/redis-operator:v0.18.1
+        imagePullPolicy: Always
+        command:
+        - /manager
+        - --leader-elect
+        env:
+        - name: ENABLE_WEBHOOKS
+          value: "false"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        securityContext: {}
