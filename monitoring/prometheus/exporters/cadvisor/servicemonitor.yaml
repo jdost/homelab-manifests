@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/name: cadvisor
+  name: cadvisor
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadvisor
+
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    path: /metrics
+    port: http
+    scheme: http
