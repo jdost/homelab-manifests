@@ -12,13 +12,10 @@ spec:
   monitoring:
     enablePodMonitor: true
 
-  # Use psql 16 w/ pgvectors image (see https://github.com/tensorchord/cloudnative-pgvecto.rs)
-  #   psql-17 images only come with 0.4.0 of the library, which immich doesn't support
-  #imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:17.2
-  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16-v0.3.0
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17-0.4.3
   postgresql:
     shared_preload_libraries:
-      - "vectors.so"
+      - "vchord.so"
     parameters:
       search_path: '"$user", public, vectors'
 
@@ -31,9 +28,6 @@ spec:
         - CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
         - CREATE EXTENSION IF NOT EXISTS cube;
         - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-        - CREATE EXTENSION IF NOT EXISTS vectors;
         - CREATE EXTENSION IF NOT EXISTS pg_trgm;
         - CREATE EXTENSION IF NOT EXISTS unaccent;
-        - ALTER DATABASE immich SET search_path TO "$user", public, vectors;
-        - GRANT USAGE ON SCHEMA vectors TO immich;
-        - GRANT SELECT ON TABLE pg_vector_index_stat to immich;
+          CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
