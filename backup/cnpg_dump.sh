@@ -6,6 +6,8 @@ echo "$pgpass" > ~/.pgpass
 chmod 0600 ~/.pgpass
 
 pg_dump \
+    --format=c \
+    --large-objects \
     --host=$host \
     --port=$port \
     --username=$username \
