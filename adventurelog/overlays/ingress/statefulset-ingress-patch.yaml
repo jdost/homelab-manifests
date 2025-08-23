@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: adventurelog
+
+spec:
+  template:
+    spec:
+      containers:
+      - name: frontend
+        env:
+        - name: PUBLIC_SERVER_URL
+          value: http://adventurelog:8000
+        - name: ORIGIN
+          value: http://adventure.log
+      - name: server
+        env:
+        - name: CSRF_TRUSTED_ORIGINS
+          value: "http://adventure.log, http://adventurelog"
+        - name: PUBLIC_URL
+          value: http://adventure.log
+        - name: FRONTEND_URL
+          value: http://adventure.log

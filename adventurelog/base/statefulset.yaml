@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: adventurelog
+  labels:
+    app.kubernetes.io/name: adventurelog
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adventurelog
+  template:
+    metadata:
+      labels:
+        app: adventurelog
+        app.kubernetes.io/name: adventurelog
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/seanmorley15/adventurelog-frontend:latest
+        ports:
+        - containerPort: 3000
+          name: frontend
+        env:
+        - name: BODY_SIZE_LIMIT
+          value: Infinity
+        - name: PUBLIC_SERVER_URL
+          value: "http://adventurelog:8000/"
+      - name: server
+        image: ghcr.io/seanmorley15/adventurelog-backend:latest
+        ports:
+        - containerPort: 8000
+          name: api
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-db-app
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-db-app
+              key: password
+        - name: PG_URL
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-db-app
+              key: host
+        - name: PG_PORT
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-db-app
+              key: port
+        - name: PGHOST
+          value: "$(PG_URL)"
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-db-app
+              key: dbname
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-config
+              key: secret-key
+        - name: DJANGO_ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-config
+              key: admin-username
+        - name: DJANGO_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: adventurelog-config
+              key: admin-password
+        - name: CSRF_TRUSTED_ORIGINS
+          value: http://adventurelog
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "2.0"
+            memory: "1Gi"
+        volumeMounts:
+        - name: adventurelog-data
+          mountPath: /code/media
+  volumeClaimTemplates:
+  - metadata:
+      name: adventurelog-data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 10Gi
