@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paperless-backup-scripts
+
+data:
+  backup_script.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    backup_file=$(date "+%Y%m%d-%H%M").tgz
+
+    cnpg_dump > paperless-db.sql
+    kubectl cp paperless-0:/usr/src/paperless/data ./data/
+    tar czvf $backup_file paperless-db.sql data/
+
+    mc mv $backup_file cluster/backups/paperless/$backup_file

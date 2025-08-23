@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: paperless
+  labels:
+    apps.kubernetes.io/name: paperless
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless
+
+  template:
+    metadata:
+      labels:
+        app: paperless
+        app.kubernetes.io/name: paperless
+
+    spec:
+      containers:
+      - name: paperless
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: PAPERLESS_CONSUMPTION_DIR
+          value: /media/consume
+        - name: PAPERLESS_DATA_DIR
+          value: /usr/src/paperless/data
+        - name: PAPERLESS_MEDIA_ROOT
+          value: /media
+        - name: PAPERLESS_EMPTY_TRASH_DIR
+          value: /media/trash
+        - name: PAPERLESS_PORT
+          value: "8000"
+        - name: PAPERLESS_DBENGINE
+          value: "postgresql"
+        - name: PAPERLESS_DBHOST
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-app
+              key: host
+        - name: PAPERLESS_DBPORT
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-app
+              key: port
+        - name: PAPERLESS_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-app
+              key: dbname
+        - name: PAPERLESS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-app
+              key: user
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-db-app
+              key: password
+        - name: PAPERLESS_REDIS
+          value: redis://redis:6379
+        envFrom:
+        - secretRef:
+            name: paperless-config
+        volumeMounts:
+        - name: paperless-data
+          mountPath: /usr/src/paperless/data
+        - name: documents
+          mountPath: /media
+      volumes:
+      - name: documents
+        persistentVolumeClaim:
+          claimName: documents
+  volumeClaimTemplates:
+  - metadata:
+      name: paperless-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
