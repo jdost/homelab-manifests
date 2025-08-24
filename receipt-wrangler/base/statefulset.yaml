@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: receiptwrangler
+  labels:
+    app.kubernetes.io/name: receiptwrangler
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: receiptwrangler
+  template:
+    metadata:
+      labels:
+        app: receiptwrangler
+        app.kubernetes.io/name: receiptwrangler
+    spec:
+      containers:
+      - name: server
+        image: noah231515/receipt-wrangler:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-db-app
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-db-app
+              key: password
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-db-app
+              key: host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-db-app
+              key: port
+        - name: DB_ENGINE
+          value: "postgresql"
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-db-app
+              key: dbname
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-config
+              key: secret-key
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: receiptwrangler-config
+              key: encryption-key
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "2.0"
+            memory: "1Gi"
+        volumeMounts:
+        - name: receiptwrangler-data
+          mountPath: /app/receipt-wrangler-api/data
+  volumeClaimTemplates:
+  - metadata:
+      name: receiptwrangler-data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 10Gi
