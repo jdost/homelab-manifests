@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tandoor
+
+spec:
+  template:
+    spec:
+      containers:
+      - name: tandoor
+        env:
+        - name: ALLOWED_HOSTS
+          value: tandoor.home,tandoor.svc

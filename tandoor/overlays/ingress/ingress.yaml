@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tandoor.home
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Tandoor
+    gethomepage.dev/description: Recipe Manager
+    gethomepage.dev/icon: "sh-tandoor-recipes"
+
+spec:
+  rules:
+  - host: tandoor
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: tandoor
+              port:
+                name: http

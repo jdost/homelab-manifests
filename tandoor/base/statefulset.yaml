@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tandoor
+  labels:
+    app.kubernetes.io/name: tandoor
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tandoor
+  template:
+    metadata:
+      labels:
+        app: tandoor
+        app.kubernetes.io/name: tandoor
+    spec:
+      enableServiceLinks: false
+      containers:
+      - name: tandoor
+        image: vabene1111/recipes:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: DB_ENGINE
+          value: django.db.backends.postgresql
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-app
+              key: user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-app
+              key: password
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-app
+              key: host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-app
+              key: port
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-app
+              key: dbname
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-config
+              key: secret-key
+        - name: ALLOWED_HOSTS
+          # This will need to be overriden to match whatever your ingress is set to
+          # and can include the internal resolution of `tandoor.<namespace>.svc` if
+          # you want it to be monitored by prometheus' service metrics
+          value: tandoor.svc
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "2.0"
+            memory: "1Gi"
+        volumeMounts:
+        - name: tandoor-data
+          mountPath: /opt/recipes/staticfiles
+          subPath: static
+        - name: tandoor-data
+          mountPath: /opt/recipes/mediafiles
+          subPath: media
+  volumeClaimTemplates:
+  - metadata:
+      name: tandoor-data
+    spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: 5Gi
