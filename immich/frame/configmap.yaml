@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-frame-config
+
+data:
+  DownloadImages: "false"
+  RefreshAlbumPeopleInterval: "2" # hours
+  PhotoDateFormat: "MM/dd/yyyy"
+  Interval: "30" # seconds
+  TransitionDuration: "2.0" # seconds
+  ShowClock: "true"
+  ClockFormat: HH:mm
+  ClockDateFormat: "eee, MMM d" # Tue, Jan 1
+  ShowProgressBar: "false"
+  ShowPhotoDate: "false"
+  ShowImageDesc: "false"
+  ShowPeopleDesc: "false"
+  ShowAlbumName: "false"
+  ShowImageLocation: "false"
+  # Styling
+  PrimaryColor: "#F5DEB3"
+  SecondaryColor: "#000000"
+  Style: "none"
+  # Display
+  ImageZoom: "true"
+  ImagePan: "false"
+  ImageFill: "false"
+  Layout: "single"

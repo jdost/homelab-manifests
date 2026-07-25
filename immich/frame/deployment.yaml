@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-frame
+  labels:
+    app.kubernetes.io/name: immich-frame
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: immich-frame
+  template:
+    metadata:
+      labels:
+        app: immich-frame
+        app.kubernetes.io/name: immich-frame
+    spec:
+      containers:
+      - name: server
+        image: ghcr.io/immichframe/immichframe:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        envFrom:
+        - configMapRef:
+            name: immich-frame-config
+        - secretRef:
+            name: immich-frame-config
+        resources:
+          requests:
+            cpu: "0.25"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
