@@ -22,6 +22,8 @@ spec:
           - tunnel
           - run
           env:
+          - name: TUNNEL_METRICS
+            value: 0.0.0.0:60123
           - name: TUNNEL_TOKEN
             valueFrom:
               secretKeyRef:
@@ -31,7 +33,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /ready
-              port: 2000
+              port: 60123
             failureThreshold: 3
             initialDelaySeconds: 30
             periodSeconds: 10
